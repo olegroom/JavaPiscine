@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="processor" class="preproc.PreProcessorToUpperImpl"/>
+
+
+    <bean id="rendererErr" class="renderer.RendererErrImpl">
+        <constructor-arg name="preproc" ref="processor"/>
+    </bean>
+
+    <bean id="printer" class="printer.PrinterWithPrefixImpl">
+        <property name="prefix" value="str"/>
+        <property name="renderer" ref="rendererErr"/>
+    </bean>
+
+</beans>
