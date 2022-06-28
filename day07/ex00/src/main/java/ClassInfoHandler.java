@@ -1,11 +1,5 @@
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class ClassInfoHandler {
 
@@ -14,6 +8,37 @@ public class ClassInfoHandler {
 
     public ClassInfoHandler(Class<?> initialClass) {
         this.aClass = initialClass;
+    }
+
+    public Optional<Method> getMethodByName(String methodName) {
+        Method[] methods = aClass.getDeclaredMethods();
+        for (Method m : methods)
+            if (m.getName().equals(methodName))
+                return Optional.of(m);
+        return Optional.empty();
+    }
+
+    public List<Object> getAndFillParams(Method method) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        List<Object> filledParams = new ArrayList<>(parameterTypes.length);
+
+        for (Class<?> typeOfParam : parameterTypes) {
+            String inputFromUser = Program.getInputFromUser("Enter " + typeOfParam.getSimpleName() + " value:");
+            if (typeOfParam.getSimpleName().equals("int"))
+                filledParams.add(Integer.parseInt(inputFromUser));
+            else
+                filledParams.add(inputFromUser);
+        }
+        return filledParams;
+    }
+
+    public void invokeMethod(Method m, Object[] args) {
+        try {
+            Object invoke = m.invoke(o, args);
+            System.out.println("Method returned :" + invoke);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -37,7 +62,7 @@ public class ClassInfoHandler {
         }
     }
 
-    public void createAnObject() throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void createAnObject() throws InstantiationException, IllegalAccessException, InvocationTargetException {
         Field[] declaredFields = aClass.getDeclaredFields();
         List<Object> list = new ArrayList<>();
         int i = 1;
@@ -54,11 +79,6 @@ public class ClassInfoHandler {
         for (Constructor<?> constructor : constructors) {
             if (constructor.getParameterTypes().length == aClass.getDeclaredFields().length) {
 
-                System.out.println("Constructor argument types:");
-                Class<?>[] parameterTypes = constructor.getParameterTypes();
-                for (Class<?> type : parameterTypes) {
-                    System.out.println(type.getSimpleName());
-                }
                 Object[] objects = list.toArray();
                 o = constructor.newInstance(objects);
 
@@ -93,8 +113,14 @@ public class ClassInfoHandler {
                     .append("(");
 
             Class<?>[] parameterTypes = m.getParameterTypes();
-            for (Class<?> paramType : parameterTypes)
-                builder.append(paramType.getName()).append(" ");
+            int i = 0;
+            for (Class<?> paramType : parameterTypes) {
+                if (parameterTypes.length == i + 1)
+                    builder.append(paramType.getSimpleName());
+                else
+                    builder.append(paramType.getSimpleName()).append(", ");
+                i++;
+            }
             builder.append(")");
             System.out.println(builder);
         }

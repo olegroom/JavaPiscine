@@ -1,3 +1,5 @@
+package user;
+
 public class User {
     private String firstName;
     private String lastName;
@@ -16,7 +18,8 @@ public class User {
     }
 
 
-    public int grow(int x) {
+    public int grow(int x, String firstName) {
+        System.out.println("from method " + firstName);
         return x + 10;
     }
 

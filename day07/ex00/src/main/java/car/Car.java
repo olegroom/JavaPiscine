@@ -1,3 +1,5 @@
+package car;
+
 public class Car {
     private String speed;
     private String model;
