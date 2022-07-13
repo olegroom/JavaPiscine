@@ -12,6 +12,11 @@ public class Car {
     public Car() {
     }
 
+    public String bee() {
+        System.out.println("BEPBEP");
+        return "BEP";
+    }
+
     @Override
     public String toString() {
         return "Car{" +
